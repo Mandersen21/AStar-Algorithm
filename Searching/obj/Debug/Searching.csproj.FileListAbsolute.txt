@@ -1,0 +1,9 @@
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Searching.exe.config
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Searching.exe
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Searching.pdb
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\obj\Debug\Searching.csprojResolveAssemblyReference.cache
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\obj\Debug\Searching.exe
+c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\obj\Debug\Searching.pdb
+C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.dll
+C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.pdb
+C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.xml
