@@ -7,3 +7,12 @@ c:\users\mikke\documents\visual studio 2015\Projects\Searching\Searching\obj\Deb
 C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.dll
 C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.pdb
 C:\Users\Mikke\documents\visual studio 2015\Projects\Searching\Searching\bin\Debug\Priority Queue.xml
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Searching.exe.config
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Searching.exe
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Searching.pdb
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Priority Queue.dll
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Priority Queue.pdb
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\bin\Debug\Priority Queue.xml
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\obj\Debug\Searching.csprojResolveAssemblyReference.cache
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\obj\Debug\Searching.exe
+C:\Users\Mikke\Documents\AStar-Algorithm\Searching\obj\Debug\Searching.pdb
