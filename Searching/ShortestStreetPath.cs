@@ -21,82 +21,71 @@ namespace Searching
             SimplePriorityQueue<StreetCorner> openList = new SimplePriorityQueue<StreetCorner>();
             List<StreetCorner> closedList = new List<StreetCorner>();
 
+            // Cost to be calculted from start to current node
+            double tentative_g_score = 0;
+
             // Put starting node into openList
             openList.Enqueue(root, Convert.ToSingle(root.f_score));
 
             // Inizialize currentNode object
             StreetCorner currentNode = root;
 
-            //Console.WriteLine("Node " + currentNode.name + " - : F: " + currentNode.f_score + "                G: " + currentNode.g_score + "                H: " + currentNode.h_score);
-
             while (openList.Count > 0)
             {
                 currentNode = openList.Dequeue();
-                currentNode.visited = true;
 
+                currentNode.visited = true;
+                closedList.Add(currentNode);
+
+                // If goal has been found
                 if (currentNode.Equals(goal))
                 {
                     // Print goal
-                    reconstruct_path(goal);
+                    reconstruct_path(root, goal);
                     break;
                 }
 
                 // Calculate g cost from current and set parent
                 foreach (var neighbor in currentNode.neighbors)
                 {
-                    neighbor.node.calculate_G_Cost(currentNode);                                      // Calculate G
-                    neighbor.node.h_score = calculateHeuristic((StreetCorner) neighbor.node, goal);   // Calculate H
-                    neighbor.node.f_score = (neighbor.node.g_score + neighbor.node.h_score);            // Calculate F
-
-                    // Add parent if neighbor has not been visited
-                    if (!neighbor.node.visited)
-                    {
-                        neighbor.node.parent = currentNode;
-                    }
-
-                    // If neighbor node is in openList
-                    if (openList.Contains(neighbor.node))
-                    {
-                        var target = sh.getNodeFromOpenList((StreetCorner)neighbor.node, openList);
-
-                        if (target.f_score < neighbor.node.f_score)
-                        {
-                            continue;
-                        }
-                    }
-
-                    // If neighbor node is in closedList
                     if (closedList.Contains(neighbor.node))
                     {
-                        var target = sh.getNodeFromClosedList((StreetCorner)neighbor.node, closedList);
-
-                        if (target.f_score < neighbor.node.f_score)
-                        {
-                            continue;
-                        }
+                        // Skip node if it has been visited before
+                        continue;
                     }
 
-                    openList.Enqueue((StreetCorner)neighbor.node, Convert.ToSingle(neighbor.node.f_score));
+                    // The distance from start to a neighbor
+                    tentative_g_score = currentNode.getG_score() + neighbor.node.calculate_G_Cost(currentNode);
+
+                    if (!openList.Contains(neighbor.node))
+                    {
+                        openList.Enqueue((StreetCorner)neighbor.node, Convert.ToSingle(root.f_score));
+                    }
+                    else if (tentative_g_score >= neighbor.node.g_score)
+                    {
+                        continue;
+                    }
+
+                    // This path is the best so far
+                    neighbor.node.parent = currentNode;
+
+                    // Calculate and set g, h, and f values for neighbor
+                    neighbor.node.g_score = tentative_g_score;
+                    neighbor.node.h_score = calculateHeuristic((StreetCorner)neighbor.node, goal);
+                    neighbor.node.f_score = neighbor.node.g_score + neighbor.node.h_score;
                 }
 
-                closedList.Add(currentNode);
-
-                if (currentNode.name != root.name)
-                {
-                    Console.WriteLine("Node " + currentNode.name + " - : F: " + currentNode.f_score + " G: " + currentNode.g_score + " H: " + currentNode.h_score);
-                }
             }
         }
 
-        public void reconstruct_path(StreetCorner goal)
+        public void reconstruct_path(StreetCorner root, StreetCorner goal)
         {
             // Print values from goal node
-            Console.WriteLine("Node " + goal.name + " - : F: " + goal.f_score + " G: " + goal.g_score + " H: " + goal.h_score);
             Console.WriteLine(" ");
-            Console.Write("The shortest path are calculated to: ");
+            Console.Write("The shortest path are calculated to: \n");
 
             List<StreetCorner> path = new List<StreetCorner>();
-            for (StreetCorner node = goal; node != null; node = (StreetCorner) node.parent)
+            for (StreetCorner node = goal; node != null; node = (StreetCorner)node.parent)
             {
                 path.Add(node);
             }
@@ -105,8 +94,24 @@ namespace Searching
 
             foreach (StreetCorner node in path)
             {
+                if (node == root)
+                {
+                    Console.WriteLine("Node " + node.name + " - : F: " + node.f_score + "                G: " + node.g_score + "                H: " + node.h_score);
+                }
+                else
+                {
+                    Console.WriteLine("Node " + node.name + " - : F: " + node.f_score + " G: " + node.g_score + " H: " + node.h_score);
+                }
+            }
+
+            foreach (StreetCorner node in path)
+            {
                 if (node == goal) Console.Write(node.name);
-                else Console.Write(node.name + "---");
+                else
+                {
+                    Console.Write(node.name + "---");
+                }
+
             }
 
             Console.WriteLine(" ");

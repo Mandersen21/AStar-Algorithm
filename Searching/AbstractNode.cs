@@ -19,6 +19,7 @@ namespace Searching
 
         public List<AbstractEdge> neighbors = new List<AbstractEdge>(); // succesors to current node
 
+        public List<String> clause = new List<String>(); // each list is equal to a whole clause.
         public AbstractNode(string name, int x, int y)
         {
             this.name = name;
@@ -26,9 +27,19 @@ namespace Searching
             this.y = y;
         }
 
-        public void calculate_G_Cost(AbstractNode other)
+        public AbstractNode(string name, List<String> clause)
         {
-            g_score = other.getG_score() + Math.Sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
+            this.name = name;
+            this.x = 0;
+            this.y = 0;
+            this.g_score = 1;
+            this.clause = clause;
+        }
+
+        public double calculate_G_Cost(AbstractNode other)
+        {
+            var g_score = Math.Sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
+            return g_score;
         }
 
         public double getG_score()
