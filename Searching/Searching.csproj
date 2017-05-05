@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildKnowledgeBase.cs" />
     <Compile Include="BuildStreetGraph.cs" />
     <Compile Include="AbstractEdge.cs" />
     <Compile Include="Clause.cs" />
