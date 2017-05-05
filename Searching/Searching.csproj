@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="BuildStreetGraph.cs" />
     <Compile Include="AbstractEdge.cs" />
+    <Compile Include="Clause.cs" />
+    <Compile Include="InferenceEngine.cs" />
     <Compile Include="Road.cs" />
     <Compile Include="SearchHelper.cs" />
     <Compile Include="AbstractNode.cs" />
