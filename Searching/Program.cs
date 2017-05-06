@@ -12,12 +12,12 @@ namespace Searching
         static void Main(string[] args)
         {
             // A* search
-            BuildStreetGraph streetGraph = new BuildStreetGraph();
-            ShortestStreetPath shortestPath = new ShortestStreetPath();
+            //BuildStreetGraph streetGraph = new BuildStreetGraph();
+            //ShortestStreetPath shortestPath = new ShortestStreetPath();
 
             //// Search #1 (Start A: , Goal: G)
-            var searchProblem1 = streetGraph.MapStreetGraph();
-            shortestPath.search(searchProblem1[0], searchProblem1[6]);
+            //var searchProblem1 = streetGraph.MapStreetGraph();
+            //shortestPath.search(searchProblem1[0], searchProblem1[6]);
 
             //// Search #2 (Start A: , Goal: M)
             //var searchProblem2 = streetGraph.MapStreetGraph();
@@ -28,35 +28,39 @@ namespace Searching
             //shortestPath.search(searchProblem3[1], searchProblem3[13]);
 
             // A* search inferens engine 
-            //BuildKnowledgeBase knowledgebase = new BuildKnowledgeBase();
-            //InferensEngine engine = new InferensEngine();
+            BuildKnowledgeBase knowledgebase = new BuildKnowledgeBase();
+            InferenceEngine engine = new InferenceEngine();
 
             // Build knowledgebase
-            //var KB = knowledgebase.MapKnowledgeBase();
+            var KB = knowledgebase.MapKnowledgeBase();
+            var counter = 0;
+            
+            // Build clause to proof
+            var alpha = new Clause("A", new List<String> { "~a" });
 
-            //// Build clause to proof
-            //var alpha = new Clause("A", new List<String> { "~a" });
+            // Print knowledgebase
+            Console.WriteLine("Knowledgebase");
 
-            //// Print knowledgebase
-            //Console.WriteLine("Knowledgebase:");
-            //foreach (var k in KB)
-            //{
-            //    Console.Write("Clause: ");
-            //    foreach (var letter in k.clause)
-            //    { Console.Write(letter + " "); }
-            //    Console.Write("\n");
-            //}
+            foreach (var k in KB)
+            {
+                Console.Write(counter + ": ");
+                foreach (var letter in k.clause)
+                { Console.Write(letter + " "); }
+                Console.Write("\n");
+                counter++;
+            }
 
-            //// Print proof clause
-            //Console.Write("Clause to proof: ");
-            //foreach (var letters in alpha.clause)
-            //{
-            //    Console.Write("a");
-            //}
-            //Console.Write("\n");
+            // Print proof clause
+            Console.Write("\n");
+            Console.Write("proof: ");
+            foreach (var letters in alpha.clause)
+            {
+                Console.Write("a");
+            }
+            Console.Write("\n \n");
 
-            ////Console.WriteLine("\n");
-            //engine.inferens_proofer(KB, alpha);
+            //Console.WriteLine("\n");
+            engine.inferens_proofer(KB, alpha);
         }
     }
 }
