@@ -9,79 +9,144 @@ namespace Searching
 {
     public class InferenceEngine
     {
-        // KB (knowledgebase, Alpha
+        //A* search for the empty clause
         public void inferens_proofer(List<Clause> KB, Clause a)
         {
             SimplePriorityQueue<Clause> openList = new SimplePriorityQueue<Clause>();
             List<Clause> closedList = new List<Clause>();
-
-            // Cost to be calculted from start to current node
-            double tentative_g_score = 0;
-
-            // Put starting node into openList
-            openList.Enqueue(a, Convert.ToSingle(a.f_score));
-
-            // Inizialize currentNode object
             Clause currentClause = a;
+
+            //Add negation clause to openList
+            openList.Enqueue(currentClause, Convert.ToSingle(a.f_score));
 
             while (openList.Count > 0)
             {
-                var value = check_knowledgebase(KB, currentClause);
-                Console.WriteLine("Current position in KB: " + value);
-                break;
+                //Dequeue clause from openList
+                currentClause = openList.Dequeue();
+
+                Console.Write("generated clause: ");
+                printClause(currentClause);
+
+                //Find clauses from KB that can be merged with current clause
+                var clausesFromKB = find_clauses_from_knowledgebase(KB, currentClause);
+
+                //Calculate huristic
+                foreach (var clausePosition in clausesFromKB)
+                {
+                    calculate_heuristic(KB, clausePosition);
+                }
+
+                //Add currentClause into closedList
+                closedList.Add(currentClause);
+
+                //Generate new clause based on found KB clauses
+                var clause = Unit_Resolution(currentClause, clausesFromKB, KB);
+                openList.Enqueue(clause, Convert.ToSingle(clause.h_score));
+                
             }
 
-
-            Console.WriteLine("\n\n\n\n");
+            Console.WriteLine("\n\n");
         }
 
-        public int check_knowledgebase(List<Clause> KB, Clause target)
+        // Unit resolution
+        public Clause Unit_Resolution(Clause target, List<int> clausesFromKB, List<Clause> KB)
+        {
+            SimplePriorityQueue<Clause> KBList = new SimplePriorityQueue<Clause>();
+            var literal = "";
+            var newClause = new Clause("");
+            newClause.clauseLiterals = new List<Literal>
+            {
+
+            };
+
+            Console.WriteLine("");
+            foreach (var position in clausesFromKB)
+            {
+                KBList.Enqueue(KB[position], Convert.ToSingle(KB[position].h_score));
+            }
+
+            var clauseToBeMerged = KBList.Dequeue();
+
+            // Form clause
+            Console.Write("  Resolution "); printClause(target); Console.Write("and "); printClause(clauseToBeMerged);
+            Console.Write("and resolves: ");
+            Console.Write("\n");
+
+            // Factoring process
+            literal = literalConverter(target);
+            Console.WriteLine("  Literal to search for: " + literal);
+
+            foreach (var l in clauseToBeMerged.clauseLiterals)
+            {
+                if (!l.name.Equals(literal))
+                {
+                    //Add to new clause
+                    newClause.clauseLiterals.Add(l);
+                }
+            }
+
+            return newClause;
+        }
+
+        public void calculate_heuristic(List<Clause> KB, int position)
+        {
+            var heuristic = KB[position].clauseLiterals.Count();
+            KB[position].h_score = heuristic;
+        }
+
+        public List<int> find_clauses_from_knowledgebase(List<Clause> KB, Clause target)
         {
             var letterToSearchFor = "";
-            var clausePosition = 0;
+            var list = new List<int>();
+            var counter = 0;
 
-            if (target.clause.Last().Contains("~"))
+            if (target.clauseLiterals.Last().name.Contains("~"))
             {
-                letterToSearchFor = target.clause[0].Substring(1);
+                letterToSearchFor = target.clauseLiterals[0].name.Substring(1);
             }
             else
             {
-                letterToSearchFor = target.clause[0];
+                letterToSearchFor = target.clauseLiterals[0].name;
             }
-
-            Console.WriteLine("letterToSearchFor " + letterToSearchFor);
 
             // Search through the knowledgebase to find if a clause has a negation of target
             foreach (var clause in KB)
             {
-                foreach (var letter in clause.clause)
+                foreach (var literal in clause.clauseLiterals)
                 {
-                    if (letter == letterToSearchFor)
+                    if (literal.name == letterToSearchFor)
                     {
-                        break;
+                        list.Add(counter);
                     }
                 }
-                clausePosition++;
+                counter++;
             }
 
-            return clausePosition;
+            return list;
         }
 
-        // Unit resolution
-        public Clause Unit_Resolution(Clause target, Clause KB)
+        public void printClause(Clause target)
         {
-            // Form clause
-
-
-
-            // Factoring process
-
-            return null;
+            foreach (var literal in target.clauseLiterals)
+            {
+                Console.Write(literal.name + " ");
+            }
         }
 
-        public double calculate_heuristic(Clause target)
+        public string literalConverter(Clause target)
         {
-            return 2;
+            var literal = "";
+
+            if (target.clauseLiterals.Last().name.Contains("~"))
+            {
+                literal = target.clauseLiterals[0].name.Substring(1);
+            }
+            else
+            {
+                literal = target.clauseLiterals[0].name;
+            }
+
+            return literal;
         }
     }
 }

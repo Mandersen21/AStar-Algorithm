@@ -10,11 +10,41 @@ namespace Searching
     {
         public List<Clause> MapKnowledgeBase()
         {
-            Clause A = new Clause("A", new List<String> { "a", "~b", "~c" });
-            Clause B = new Clause("B", new List<String> { "b", "~c" });
-            Clause C = new Clause("C", new List<String> { "b", "~c", "~d" });
-            Clause D = new Clause("D", new List<String> { "c" });
-            Clause E = new Clause("E", new List<String> { "d" });
+            Clause A = new Clause("A");
+            Clause B = new Clause("B");
+            Clause C = new Clause("C");
+            Clause D = new Clause("D");
+            Clause E = new Clause("E");
+
+            A.clauseLiterals = new List<Literal>
+            {
+                new Literal("a"),
+                new Literal("~b"),
+                new Literal("~c")
+            };
+
+            B.clauseLiterals = new List<Literal>
+            {
+                new Literal("b"),
+                new Literal("~b"),
+            };
+
+            C.clauseLiterals = new List<Literal>
+            {
+                new Literal("b"),
+                new Literal("~c"),
+                new Literal("~d")
+            };
+
+            D.clauseLiterals = new List<Literal>
+            {
+                new Literal("c"),
+            };
+
+            E.clauseLiterals = new List<Literal>
+            {
+                new Literal("d"),
+            };
 
             return new List<Clause> {
                 A, B, C, D, E

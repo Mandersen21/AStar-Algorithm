@@ -10,16 +10,14 @@ namespace Searching
     {
         public string name { get; private set; } // name of the current node
         public AbstractNode parent { get; set; } // parent to the current node
-        public bool visited { get; set; }
-        public int x { get; set; }
-        public int y { get; set; }
-        public double g_score { get; set; } // distance from start to current node
-        public double h_score { get; set; } // heuristic distance from this node to goal
-        public double f_score { get; set; } // distance from start to current node + Heuristic distance to goal node
+        public bool visited { get; set; }        // If it has been visited before
+        public int x { get; set; }               // x cordinate
+        public int y { get; set; }               // y cordinate
+        public double g_score { get; set; }      // distance from start to current node
+        public double h_score { get; set; }      // heuristic distance from this node to goal
+        public double f_score { get; set; }      // distance from start to current node + Heuristic distance to goal node
 
-        public List<AbstractEdge> neighbors = new List<AbstractEdge>(); // succesors to current node
-
-        public List<String> clause = new List<String>(); // each list is equal to a whole clause.
+        //public List<String> clause = new List<String>(); // each list is equal to a whole clause.
         public AbstractNode(string name, int x, int y)
         {
             this.name = name;
@@ -27,13 +25,9 @@ namespace Searching
             this.y = y;
         }
 
-        public AbstractNode(string name, List<String> clause)
+        public AbstractNode(string name)
         {
             this.name = name;
-            this.x = 0;
-            this.y = 0;
-            this.g_score = 1;
-            this.clause = clause;
         }
 
         public double calculate_G_Cost(AbstractNode other)

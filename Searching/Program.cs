@@ -12,10 +12,10 @@ namespace Searching
         static void Main(string[] args)
         {
             // A* search
-            //BuildStreetGraph streetGraph = new BuildStreetGraph();
-            //ShortestStreetPath shortestPath = new ShortestStreetPath();
+            BuildStreetGraph streetGraph = new BuildStreetGraph();
+            ShortestStreetPath shortestPath = new ShortestStreetPath();
 
-            //// Search #1 (Start A: , Goal: G)
+            // Search #1 (Start A: , Goal: G)
             //var searchProblem1 = streetGraph.MapStreetGraph();
             //shortestPath.search(searchProblem1[0], searchProblem1[6]);
 
@@ -36,28 +36,31 @@ namespace Searching
             var counter = 0;
             
             // Build clause to proof
-            var alpha = new Clause("A", new List<String> { "~a" });
+            var alpha = new Clause("A");
+
+            alpha.clauseLiterals = new List<Literal>
+            {
+                new Literal("~a")
+            };
 
             // Print knowledgebase
             Console.WriteLine("Knowledgebase");
 
-            foreach (var k in KB)
+            foreach (var clause in KB)
             {
                 Console.Write(counter + ": ");
-                foreach (var letter in k.clause)
-                { Console.Write(letter + " "); }
+                foreach (var literal in clause.clauseLiterals)
+                {
+                    Console.Write(literal.name + " ");
+                }
                 Console.Write("\n");
                 counter++;
             }
 
-            // Print proof clause
+            Console.WriteLine("-------------------------");
+            Console.Write("proof: a");
+            Console.WriteLine("\n-------------------------");
             Console.Write("\n");
-            Console.Write("proof: ");
-            foreach (var letters in alpha.clause)
-            {
-                Console.Write("a");
-            }
-            Console.Write("\n \n");
 
             //Console.WriteLine("\n");
             engine.inferens_proofer(KB, alpha);

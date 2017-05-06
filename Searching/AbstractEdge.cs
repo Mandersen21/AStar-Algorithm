@@ -16,5 +16,10 @@ namespace Searching
             this.node = n;
             this.name = name;
         }
+
+        public AbstractEdge(string literal)
+        {
+            this.name = literal;
+        }
     }
 }

@@ -8,7 +8,9 @@ namespace Searching
 {
     public class Clause : AbstractNode
     {
-        public Clause(string name, List<String> clause) : base(name, clause)
+        public List<Literal> clauseLiterals = new List<Literal>(); // literals on current clause
+
+        public Clause(string name) : base(name)
         {
 
         }
