@@ -14,9 +14,12 @@ namespace Searching
         List<Clause> closedList = new List<Clause>();
         SimplePriorityQueue<Clause> openList = new SimplePriorityQueue<Clause>();
 
-        public void inference_proofer(List<Clause> KB, Clause a)
+        public void inference_proofer_search(List<Clause> KB, Clause root, Clause goal)
         {
-            openList.Enqueue(a, Convert.ToSingle(a.f_score));
+            openList.Enqueue(root, Convert.ToSingle(root.f_score));
+
+            // Cost to be calculted from start to current node
+            double tentative_g_score = 0;
 
             while (openList.Count > 0)
             {
@@ -25,11 +28,13 @@ namespace Searching
                 //Find clauses from KB that can be merged with current clause
                 var clauseFromKB = find_clauses_from_knowledgebase(currentClause, KB);
 
-                //Calculate huristic
+                //Calculate heuristic
                 foreach (var position in clauseFromKB)
                 {
                     calculate_heuristic(KB, position);
                 }
+
+                
 
                 //Add currentClause into closedList
                 closedList.Add(currentClause);
@@ -37,16 +42,24 @@ namespace Searching
                 //Generate new clause based on found KB clauses
                 var clause = Resolution(currentClause, clauseFromKB, KB);
 
+                tentative_g_score = currentClause.getG_score() + 1;
+
+                clause.g_score = tentative_g_score;
+                calculate_heuristic_for_clause(clause);
+                clause.calculate_F_Cost();
+
                 //Add new clause to openList
                 openList.Enqueue(clause, Convert.ToSingle(clause.h_score));
 
-                Thread.Sleep(7000);
+                Console.WriteLine("F score: " + currentClause.f_score + " G score: " + currentClause.g_score + " H score: " + currentClause.h_score);
 
-                //if (clause.clauseLiterals.Count == 0)
-                //{
-                //    Console.WriteLine("Empty clause has been found");
-                //    break;
-                //}
+                //Check if empty clause has been found, stop search if found
+                var reached = isEmptyClause(goal, clause);
+                if (reached) { break; }
+
+                
+
+                Thread.Sleep(3000);
             }
 
             Console.WriteLine("\n\n");
@@ -58,10 +71,8 @@ namespace Searching
             Clause resolutionClause = new Clause("F");
             List<Literal> literalList = new List<Literal>();
 
-            var foundInCloseList = false;
-
-            Console.Write("Resoluting "); printClause(target);
-            Console.Write("and ");
+            Console.Write("Resolution on: "); printClause(target);
+            Console.Write("with ");
 
             foreach (var position in clauseFromKB)
             {
@@ -69,16 +80,12 @@ namespace Searching
                 {
                     KBList.Enqueue(KB[position], Convert.ToSingle(KB[position].f_score));
                 }
-                else
-                {
-                    //Console.WriteLine("Clause has been used, skipping");
-                }
-                
             }
 
             while (KBList.Count > 0)
             {
                 var clauseFromKBList = KBList.Dequeue();
+
                 printClause(clauseFromKBList);
 
                 literalList = addLiterals(target, clauseFromKBList);
@@ -95,10 +102,20 @@ namespace Searching
                     }
                 }
 
+                if (resolutionClause.clauseLiterals.Count == 0)
+                {
+                    //Add empty clause sign to clause
+                    resolutionClause.clauseLiterals.Add(new Literal("[]"));
+                }
+
+                // Output clause
+                Console.Write("generates clause: ");
+                printClause(resolutionClause);
+
+                resolutionClause.g_score = 1;
+
                 //Check if generated clause already exist.
                 var resolutionClauseAsString = printLiteralAsString(resolutionClause);
-                Console.Write(" resolves: "); printClause(resolutionClause);
-                Console.WriteLine("");
 
                 foreach (var clause in closedList)
                 {
@@ -106,10 +123,11 @@ namespace Searching
 
                     if (resolutionClauseAsString.Equals(closeListClauseAsString))
                     {
-                        foundInCloseList = true;
                         clauseFromKBList.visited = true;
                     }
                 }
+
+                Console.WriteLine("");
 
                 break;
             }
@@ -123,6 +141,12 @@ namespace Searching
             KB[position].h_score = heuristic;
 
             KB[position].calculate_F_Cost();
+        }
+
+        public void calculate_heuristic_for_clause(Clause target)
+        {
+            var heuristic = target.clauseLiterals.Count();
+            target.h_score = heuristic;
         }
 
         public List<int> find_clauses_from_knowledgebase(Clause target, List<Clause> KB)
@@ -217,6 +241,22 @@ namespace Searching
             }
 
             return list;
+        }
+
+        public bool isEmptyClause(Clause goal, Clause current)
+        {
+            var goalClauseString = printLiteralAsString(goal);
+            var currentClauseString = printLiteralAsString(current);
+
+            if (goalClauseString.Equals(currentClauseString))
+            {
+                Console.WriteLine("Empty clause has been found: " + goalClauseString);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

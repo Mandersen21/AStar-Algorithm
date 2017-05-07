@@ -37,10 +37,15 @@ namespace Searching
             
             // Build clause to proof
             var alpha = new Clause("A");
+            var goal = new Clause("Goal");
 
             alpha.clauseLiterals = new List<Literal>
             {
                 new Literal("~a")
+            };
+
+            goal.clauseLiterals = new List<Literal> {
+                new Literal("[]")
             };
 
             // Print knowledgebase
@@ -62,8 +67,7 @@ namespace Searching
             Console.WriteLine("\n-------------------------");
             Console.Write("\n");
 
-            //Console.WriteLine("\n");
-            engine.inference_proofer(KB, alpha);
+            engine.inference_proofer_search(KB, alpha, goal);
         }
     }
 }
