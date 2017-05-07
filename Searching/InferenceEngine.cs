@@ -52,12 +52,11 @@ namespace Searching
                 openList.Enqueue(clause, Convert.ToSingle(clause.h_score));
 
                 Console.WriteLine("F score: " + currentClause.f_score + " G score: " + currentClause.g_score + " H score: " + currentClause.h_score);
+                Console.WriteLine("");
 
                 //Check if empty clause has been found, stop search if found
                 var reached = isEmptyClause(goal, clause);
                 if (reached) { break; }
-
-                
 
                 Thread.Sleep(3000);
             }
@@ -79,6 +78,10 @@ namespace Searching
                 if (!KB[position].visited)
                 {
                     KBList.Enqueue(KB[position], Convert.ToSingle(KB[position].f_score));
+                }
+                else
+                {
+                    target.g_score = target.g_score - 1;
                 }
             }
 

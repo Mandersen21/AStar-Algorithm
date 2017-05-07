@@ -16,8 +16,8 @@ namespace Searching
             ShortestStreetPath shortestPath = new ShortestStreetPath();
 
             // Search #1 (Start A: , Goal: G)
-            //var searchProblem1 = streetGraph.MapStreetGraph();
-            //shortestPath.search(searchProblem1[0], searchProblem1[6]);
+            var searchProblem1 = streetGraph.MapStreetGraph();
+            shortestPath.search(searchProblem1[0], searchProblem1[6]);
 
             //// Search #2 (Start A: , Goal: M)
             //var searchProblem2 = streetGraph.MapStreetGraph();
