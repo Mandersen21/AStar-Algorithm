@@ -34,8 +34,6 @@ namespace Searching
                     calculate_heuristic(KB, position);
                 }
 
-                
-
                 //Add currentClause into closedList
                 closedList.Add(currentClause);
 
@@ -51,14 +49,13 @@ namespace Searching
                 //Add new clause to openList
                 openList.Enqueue(clause, Convert.ToSingle(clause.h_score));
 
-                Console.WriteLine("F score: " + currentClause.f_score + " G score: " + currentClause.g_score + " H score: " + currentClause.h_score);
-                Console.WriteLine("");
+                Console.WriteLine("F score: " + currentClause.f_score + " G score: " + currentClause.g_score + " H score: " + currentClause.h_score + "\n");
 
                 //Check if empty clause has been found, stop search if found
                 var reached = isEmptyClause(goal, clause);
                 if (reached) { break; }
 
-                Thread.Sleep(3000);
+                Thread.Sleep(7000);
             }
 
             Console.WriteLine("\n\n");
