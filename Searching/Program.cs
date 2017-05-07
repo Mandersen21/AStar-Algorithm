@@ -63,7 +63,7 @@ namespace Searching
             Console.Write("\n");
 
             //Console.WriteLine("\n");
-            engine.inferens_proofer(KB, alpha);
+            engine.inference_proofer(KB, alpha);
         }
     }
 }

@@ -4,125 +4,147 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Searching
 {
     public class InferenceEngine
     {
-        //A* search for the empty clause
-        public void inferens_proofer(List<Clause> KB, Clause a)
-        {
-            SimplePriorityQueue<Clause> openList = new SimplePriorityQueue<Clause>();
-            List<Clause> closedList = new List<Clause>();
-            Clause currentClause = a;
+        //Initialize lists for A* search
+        List<Clause> closedList = new List<Clause>();
+        SimplePriorityQueue<Clause> openList = new SimplePriorityQueue<Clause>();
 
-            //Add negation clause to openList
-            openList.Enqueue(currentClause, Convert.ToSingle(a.f_score));
+        public void inference_proofer(List<Clause> KB, Clause a)
+        {
+            openList.Enqueue(a, Convert.ToSingle(a.f_score));
 
             while (openList.Count > 0)
             {
-                //Dequeue clause from openList
-                currentClause = openList.Dequeue();
-
-                Console.Write("generated clause: ");
-                printClause(currentClause);
+                var currentClause = openList.Dequeue();
 
                 //Find clauses from KB that can be merged with current clause
-                var clausesFromKB = find_clauses_from_knowledgebase(KB, currentClause);
+                var clauseFromKB = find_clauses_from_knowledgebase(currentClause, KB);
 
                 //Calculate huristic
-                foreach (var clausePosition in clausesFromKB)
+                foreach (var position in clauseFromKB)
                 {
-                    calculate_heuristic(KB, clausePosition);
+                    calculate_heuristic(KB, position);
                 }
 
                 //Add currentClause into closedList
                 closedList.Add(currentClause);
 
                 //Generate new clause based on found KB clauses
-                var clause = Unit_Resolution(currentClause, clausesFromKB, KB);
+                var clause = Resolution(currentClause, clauseFromKB, KB);
+
+                //Add new clause to openList
                 openList.Enqueue(clause, Convert.ToSingle(clause.h_score));
-                
+
+                Thread.Sleep(7000);
+
+                //if (clause.clauseLiterals.Count == 0)
+                //{
+                //    Console.WriteLine("Empty clause has been found");
+                //    break;
+                //}
             }
 
             Console.WriteLine("\n\n");
         }
 
-        // Unit resolution
-        public Clause Unit_Resolution(Clause target, List<int> clausesFromKB, List<Clause> KB)
+        public Clause Resolution(Clause target, List<int> clauseFromKB, List<Clause> KB)
         {
             SimplePriorityQueue<Clause> KBList = new SimplePriorityQueue<Clause>();
-            var literal = "";
-            var newClause = new Clause("");
-            newClause.clauseLiterals = new List<Literal>
+            Clause resolutionClause = new Clause("F");
+            List<Literal> literalList = new List<Literal>();
+
+            var foundInCloseList = false;
+
+            Console.Write("Resoluting "); printClause(target);
+            Console.Write("and ");
+
+            foreach (var position in clauseFromKB)
             {
-
-            };
-
-            Console.WriteLine("");
-            foreach (var position in clausesFromKB)
-            {
-                KBList.Enqueue(KB[position], Convert.ToSingle(KB[position].h_score));
-            }
-
-            var clauseToBeMerged = KBList.Dequeue();
-
-            // Form clause
-            Console.Write("  Resolution "); printClause(target); Console.Write("and "); printClause(clauseToBeMerged);
-            Console.Write("and resolves: ");
-            Console.Write("\n");
-
-            // Factoring process
-            literal = literalConverter(target);
-            Console.WriteLine("  Literal to search for: " + literal);
-
-            foreach (var l in clauseToBeMerged.clauseLiterals)
-            {
-                if (!l.name.Equals(literal))
+                if (!KB[position].visited)
                 {
-                    //Add to new clause
-                    newClause.clauseLiterals.Add(l);
+                    KBList.Enqueue(KB[position], Convert.ToSingle(KB[position].f_score));
                 }
+                else
+                {
+                    //Console.WriteLine("Clause has been used, skipping");
+                }
+                
             }
 
-            return newClause;
+            while (KBList.Count > 0)
+            {
+                var clauseFromKBList = KBList.Dequeue();
+                printClause(clauseFromKBList);
+
+                literalList = addLiterals(target, clauseFromKBList);
+
+                //Get literal to search for
+                var literal = literalConverter(literalList[0].name);
+
+                literalList.RemoveAt(0);
+                foreach (var l in literalList)
+                {
+                    if (!l.name.Equals(literal))
+                    {
+                        resolutionClause.clauseLiterals.Add(l);
+                    }
+                }
+
+                //Check if generated clause already exist.
+                var resolutionClauseAsString = printLiteralAsString(resolutionClause);
+                Console.Write(" resolves: "); printClause(resolutionClause);
+                Console.WriteLine("");
+
+                foreach (var clause in closedList)
+                {
+                    var closeListClauseAsString = printLiteralAsString(clause);
+
+                    if (resolutionClauseAsString.Equals(closeListClauseAsString))
+                    {
+                        foundInCloseList = true;
+                        clauseFromKBList.visited = true;
+                    }
+                }
+
+                break;
+            }
+
+            return resolutionClause;
         }
 
         public void calculate_heuristic(List<Clause> KB, int position)
         {
             var heuristic = KB[position].clauseLiterals.Count();
             KB[position].h_score = heuristic;
+
+            KB[position].calculate_F_Cost();
         }
 
-        public List<int> find_clauses_from_knowledgebase(List<Clause> KB, Clause target)
+        public List<int> find_clauses_from_knowledgebase(Clause target, List<Clause> KB)
         {
-            var letterToSearchFor = "";
-            var list = new List<int>();
+            var positionList = new List<int>();
             var counter = 0;
 
-            if (target.clauseLiterals.Last().name.Contains("~"))
-            {
-                letterToSearchFor = target.clauseLiterals[0].name.Substring(1);
-            }
-            else
-            {
-                letterToSearchFor = target.clauseLiterals[0].name;
-            }
+            var literalToSearchFor = literalConverter(target.clauseLiterals[target.clauseLiterals.Count() - 1].name.ToString());
 
-            // Search through the knowledgebase to find if a clause has a negation of target
             foreach (var clause in KB)
             {
                 foreach (var literal in clause.clauseLiterals)
                 {
-                    if (literal.name == letterToSearchFor)
+                    if (literal.name == literalToSearchFor)
                     {
-                        list.Add(counter);
+                        positionList.Add(counter);
                     }
                 }
                 counter++;
             }
 
-            return list;
+            return positionList;
         }
 
         public void printClause(Clause target)
@@ -133,20 +155,115 @@ namespace Searching
             }
         }
 
-        public string literalConverter(Clause target)
+        public string literalConverter(string target)
         {
-            var literal = "";
+            var literal = target;
 
-            if (target.clauseLiterals.Last().name.Contains("~"))
+            if (literal.Contains("~"))
             {
-                literal = target.clauseLiterals[0].name.Substring(1);
+                literal = literal.Substring(1);
             }
             else
             {
-                literal = target.clauseLiterals[0].name;
+                literal = "~" + literal;
             }
 
             return literal;
         }
+
+        public string printLiteralAsString(Clause target)
+        {
+            var literal = "";
+
+            foreach (var lit in target.clauseLiterals)
+            {
+                literal = lit.name + " " + literal;
+            }
+
+            return literal;
+        }
+
+        public List<Literal> addLiterals(Clause target, Clause KB_clause)
+        {
+            List<Literal> list = new List<Literal>();
+
+            if (target.clauseLiterals.Count > KB_clause.clauseLiterals.Count)
+            {
+                //Add KB literal
+                foreach (var lit in KB_clause.clauseLiterals)
+                {
+                    list.Add(lit);
+                }
+
+                //Add taget literal
+                foreach (var lit in target.clauseLiterals)
+                {
+                    list.Add(lit);
+                }
+            }
+            else
+            {
+                //Add taget literal
+                foreach (var lit in target.clauseLiterals)
+                {
+                    list.Add(lit);
+                }
+
+                //Add KB literal
+                foreach (var lit in KB_clause.clauseLiterals)
+                {
+                    list.Add(lit);
+                }
+            }
+
+            return list;
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//if (target.clauseLiterals.Count > 1)
+//{
+//    foreach (var lit in target.clauseLiterals)
+//    {
+//        if (!lit.name.Contains(literal))
+//        {
+//            //Add to new clause
+//            resolutionClause.clauseLiterals.Add(lit);
+//        }
+//    }
+//}
+//else
+//{
+//    foreach (var lit in clauseFromKBList.clauseLiterals)
+//    {
+//        if (!lit.name.Equals(literal))
+//        {
+//            //Add to new clause
+//            resolutionClause.clauseLiterals.Add(lit);
+//        }
+//    }
+//}
+
+//var count = target.clauseLiterals.Count;
+
+//if (target.clauseLiterals[count - 1].name.Contains("~"))
+//{
+//    literal = target.clauseLiterals[count - 1].name.Substring(1);
+//}
+//else
+//{
+//    literal = "~" + target.clauseLiterals[count - 1].name;
+//}

@@ -36,6 +36,11 @@ namespace Searching
             return g_score;
         }
 
+        public void calculate_F_Cost()
+        {
+            f_score = g_score + h_score;
+        }
+
         public double getG_score()
         {
             return g_score;

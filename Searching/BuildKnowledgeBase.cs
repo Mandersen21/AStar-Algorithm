@@ -46,6 +46,12 @@ namespace Searching
                 new Literal("d"),
             };
 
+            A.g_score = 1;
+            B.g_score = 1;
+            C.g_score = 1;
+            D.g_score = 1;
+            E.g_score = 1;
+
             return new List<Clause> {
                 A, B, C, D, E
             };
